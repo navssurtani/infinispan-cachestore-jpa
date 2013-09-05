@@ -29,12 +29,11 @@ import javax.persistence.metamodel.Type;
 
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.CacheLoaderConfiguration;
 import org.infinispan.container.entries.ImmortalCacheEntry;
 import org.infinispan.container.entries.InternalCacheEntry;
-import org.infinispan.loaders.CacheLoaderConfig;
 import org.infinispan.loaders.CacheLoaderException;
-import org.infinispan.loaders.CacheLoaderMetadata;
-import org.infinispan.loaders.LockSupportCacheStore;
+import org.infinispan.loaders.spi.LockSupportCacheStore;
 import org.infinispan.commons.marshall.StreamingMarshaller;
 import org.infinispan.commons.util.InfinispanCollections;
 
@@ -43,7 +42,6 @@ import org.infinispan.commons.util.InfinispanCollections;
  * @author <a href="mailto:rtsang@redhat.com">Ray Tsang</a>
  *
  */
-@CacheLoaderMetadata(configurationClass = JpaCacheStoreConfig.class)
 public class JpaCacheStore extends LockSupportCacheStore<Integer> {
 	private JpaCacheStoreConfig config;
 	private AdvancedCache<?, ?> cache;
@@ -53,7 +51,7 @@ public class JpaCacheStore extends LockSupportCacheStore<Integer> {
 	private final static byte BINARY_STREAM_DELIMITER = 100;
 
 	@Override
-	public void init(CacheLoaderConfig config, Cache<?, ?> cache,
+	public void init(CacheLoaderConfiguration config, Cache<?, ?> cache,
 			StreamingMarshaller m) throws CacheLoaderException {
 		super.init(config, cache, m);
 		this.cache = cache.getAdvancedCache();
@@ -113,11 +111,6 @@ public class JpaCacheStore extends LockSupportCacheStore<Integer> {
 			throw new CacheLoaderException(
 					"Exceptions occurred while stopping store", t);
 		}
-	}
-
-	@Override
-	public Class<? extends CacheLoaderConfig> getConfigurationClass() {
-		return JpaCacheStoreConfig.class;
 	}
 
 	protected boolean isValidKeyType(Object key) {
